@@ -1,0 +1,121 @@
+PHÂN TÍCH CHUYÊN SÂU: NGHỊCH LÝ ĐƯỜNG ĐI VÀ ĐÁNH GIÁ HEURISTIC TRÊN TẬP TEST MỞ RỘNG
+================================================================================
+
+=== Test 4 (Group 3: Bridges & Switches) ===
+  * BFS : Moves=22, SWAP=0, Expanded=308
+  * UCS : Moves=22, SWAP=0, Expanded=312
+  * A*  : Moves=22, SWAP=0, Expanded=112
+  * Lộ trình BFS vs UCS: GIỐNG NHAU
+  * Lộ trình UCS vs A* : RẼ NHÁNH DO HEURISTIC TIE-BREAKING
+
+=== Test 6 (Group 4: Combined) ===
+  * BFS : Moves=25, SWAP=0, Expanded=233
+  * UCS : Moves=25, SWAP=0, Expanded=241
+  * A*  : Moves=25, SWAP=0, Expanded=162
+  * Lộ trình BFS vs UCS: GIỐNG NHAU
+  * Lộ trình UCS vs A* : RẼ NHÁNH DO HEURISTIC TIE-BREAKING
+
+=== Test 9 (Group 4: Combined) ===
+  * BFS : Moves=21, SWAP=1, Expanded=834
+  * UCS : Moves=21, SWAP=1, Expanded=1068
+  * A*  : Moves=21, SWAP=2, Expanded=333
+  * Lộ trình BFS vs UCS: GIỐNG NHAU
+  * Lộ trình UCS vs A* : RẼ NHÁNH DO HEURISTIC TIE-BREAKING
+
+=== Test 10 (Group 1: Basic) ===
+  * BFS : Moves=26, SWAP=0, Expanded=154
+  * UCS : Moves=26, SWAP=0, Expanded=157
+  * A*  : Moves=26, SWAP=0, Expanded=71
+  * Lộ trình BFS vs UCS: GIỐNG NHAU
+  * Lộ trình UCS vs A* : RẼ NHÁNH DO HEURISTIC TIE-BREAKING
+
+=== Test 11 (Group 1: Basic) ===
+  * BFS : Moves=22, SWAP=0, Expanded=145
+  * UCS : Moves=22, SWAP=0, Expanded=146
+  * A*  : Moves=22, SWAP=0, Expanded=93
+  * Lộ trình BFS vs UCS: GIỐNG NHAU
+  * Lộ trình UCS vs A* : RẼ NHÁNH DO HEURISTIC TIE-BREAKING
+
+=== Test 13 (Group 1: Basic) ===
+  * BFS : Moves=26, SWAP=0, Expanded=111
+  * UCS : Moves=26, SWAP=0, Expanded=111
+  * A*  : Moves=26, SWAP=0, Expanded=67
+  * Lộ trình BFS vs UCS: GIỐNG NHAU
+  * Lộ trình UCS vs A* : RẼ NHÁNH DO HEURISTIC TIE-BREAKING
+
+=== Test 14 (Group 1: Basic) ===
+  * BFS : Moves=25, SWAP=0, Expanded=115
+  * UCS : Moves=25, SWAP=0, Expanded=118
+  * A*  : Moves=25, SWAP=0, Expanded=97
+  * Lộ trình BFS vs UCS: GIỐNG NHAU
+  * Lộ trình UCS vs A* : RẼ NHÁNH DO HEURISTIC TIE-BREAKING
+
+=== Test 15 (Group 2: Fragile) ===
+  * BFS : Moves=18, SWAP=0, Expanded=152
+  * UCS : Moves=19, SWAP=0, Expanded=152
+  * A*  : Moves=19, SWAP=0, Expanded=62
+  * Lộ trình BFS vs UCS: RẼ NHÁNH KHÁC BIỆT
+  * Lộ trình UCS vs A* : GIỐNG NHAU
+
+=== Test 16 (Group 2: Fragile) ===
+  * BFS : Moves=22, SWAP=0, Expanded=104
+  * UCS : Moves=22, SWAP=0, Expanded=107
+  * A*  : Moves=22, SWAP=0, Expanded=54
+  * Lộ trình BFS vs UCS: RẼ NHÁNH KHÁC BIỆT
+  * Lộ trình UCS vs A* : GIỐNG NHAU
+
+=== Test 17 (Group 2: Fragile) ===
+  * BFS : Moves=27, SWAP=0, Expanded=112
+  * UCS : Moves=27, SWAP=0, Expanded=111
+  * A*  : Moves=27, SWAP=0, Expanded=101
+  * Lộ trình BFS vs UCS: GIỐNG NHAU
+  * Lộ trình UCS vs A* : RẼ NHÁNH DO HEURISTIC TIE-BREAKING
+
+=== Test 18 (Group 2: Fragile) ===
+  * BFS : Moves=20, SWAP=0, Expanded=111
+  * UCS : Moves=22, SWAP=0, Expanded=111
+  * A*  : Moves=22, SWAP=0, Expanded=82
+  * Lộ trình BFS vs UCS: RẼ NHÁNH KHÁC BIỆT
+  * Lộ trình UCS vs A* : RẼ NHÁNH DO HEURISTIC TIE-BREAKING
+
+=== Test 25 (Group 4: Combined) ===
+  * BFS : Moves=25, SWAP=0, Expanded=126
+  * UCS : Moves=25, SWAP=0, Expanded=122
+  * A*  : Moves=25, SWAP=0, Expanded=92
+  * Lộ trình BFS vs UCS: GIỐNG NHAU
+  * Lộ trình UCS vs A* : RẼ NHÁNH DO HEURISTIC TIE-BREAKING
+
+=== Test 26 (Group 4: Combined) ===
+  * BFS : Moves=21, SWAP=0, Expanded=115
+  * UCS : Moves=24, SWAP=0, Expanded=123
+  * A*  : Moves=24, SWAP=0, Expanded=97
+  * Lộ trình BFS vs UCS: RẼ NHÁNH KHÁC BIỆT
+  * Lộ trình UCS vs A* : GIỐNG NHAU
+
+=== Test 27 (Group 4: Combined) ===
+  * BFS : Moves=26, SWAP=0, Expanded=149
+  * UCS : Moves=26, SWAP=0, Expanded=144
+  * A*  : Moves=26, SWAP=0, Expanded=43
+  * Lộ trình BFS vs UCS: RẼ NHÁNH KHÁC BIỆT
+  * Lộ trình UCS vs A* : RẼ NHÁNH DO HEURISTIC TIE-BREAKING
+
+=== Test 31 (Group 3: Bridges & Switches) ===
+  * BFS : Moves=21, SWAP=0, Expanded=171
+  * UCS : Moves=21, SWAP=0, Expanded=181
+  * A*  : Moves=21, SWAP=0, Expanded=75
+  * Lộ trình BFS vs UCS: GIỐNG NHAU
+  * Lộ trình UCS vs A* : RẼ NHÁNH DO HEURISTIC TIE-BREAKING
+
+=== Test 32 (Group 3: Bridges & Switches) ===
+  * BFS : Moves=23, SWAP=0, Expanded=293
+  * UCS : Moves=23, SWAP=0, Expanded=294
+  * A*  : Moves=23, SWAP=0, Expanded=165
+  * Lộ trình BFS vs UCS: GIỐNG NHAU
+  * Lộ trình UCS vs A* : RẼ NHÁNH DO HEURISTIC TIE-BREAKING
+
+=== Test 34 (Group 3: Bridges & Switches) ===
+  * BFS : Moves=18, SWAP=0, Expanded=127
+  * UCS : Moves=18, SWAP=0, Expanded=149
+  * A*  : Moves=18, SWAP=0, Expanded=91
+  * Lộ trình BFS vs UCS: GIỐNG NHAU
+  * Lộ trình UCS vs A* : RẼ NHÁNH DO HEURISTIC TIE-BREAKING

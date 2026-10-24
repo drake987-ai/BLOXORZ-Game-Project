@@ -1,0 +1,26 @@
+file,name,group,size,seed,bfs_moves,bfs_expanded
+test10.json,Test 10,1,medium,1,26,154
+test11.json,Test 11,1,medium,1,22,145
+test12.json,Test 12,1,medium,1,20,100
+test13.json,Test 13,1,medium,1,26,111
+test14.json,Test 14,1,medium,1,25,115
+test15.json,Test 15,2,medium,2,18,152
+test16.json,Test 16,2,medium,2,22,104
+test17.json,Test 17,2,medium,2,27,112
+test18.json,Test 18,2,medium,2,20,111
+test19.json,Test 19,2,medium,2,20,109
+test20.json,Test 20,3,medium,3,21,129
+test21.json,Test 21,3,medium,3,23,139
+test22.json,Test 22,3,medium,3,28,160
+test23.json,Test 23,3,medium,3,26,185
+test24.json,Test 24,3,medium,3,20,170
+test25.json,Test 25,4,medium,4,25,126
+test26.json,Test 26,4,medium,4,21,115
+test27.json,Test 27,4,medium,4,26,149
+test28.json,Test 28,4,medium,4,19,125
+test29.json,Test 29,4,medium,4,23,226
+test30.json,Test 30,3,medium,3,26,206
+test31.json,Test 31,3,medium,3,21,171
+test32.json,Test 32,3,medium,3,23,293
+test33.json,Test 33,3,medium,3,32,166
+test34.json,Test 34,3,medium,3,18,127
