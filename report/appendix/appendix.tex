@@ -1,0 +1,139 @@
+\section{Per-stage results}
+\label{app:perlevel}
+
+Results from \texttt{experiments/summary\_4\_metrics.csv}, one run per algorithm and stage.
+
+\begingroup
+\renewcommand{\baselinestretch}{1.0}\small
+\begin{longtable}{llrrrrrrrr}
+\caption{Expanded nodes and solution length (moves) per stage}\label{tab:perlevel-exp}\\
+\toprule
+ & & \multicolumn{4}{c}{\textbf{Expanded nodes}} & \multicolumn{4}{c}{\textbf{Moves}} \\
+\cmidrule(lr){3-6}\cmidrule(lr){7-10}
+\textbf{Stage} & \textbf{Group} & BFS & DFS & UCS & A* & BFS & DFS & UCS & A* \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Stage} & \textbf{Group} & BFS & DFS & UCS & A* & BFS & DFS & UCS & A* \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+Test 1 & G1 & 105 & 87 & 122 & 19 & 14 & 78 & 14 & 14 \\
+Test 2 & G2 & 36 & 38 & 111 & 42 & 18 & 33 & 18 & 18 \\
+Test 3 & G3 & 112 & 97 & 122 & 40 & 23 & 72 & 23 & 23 \\
+Test 4 & G3 & 308 & 191 & 312 & 112 & 22 & 156 & 22 & 22 \\
+Test 5 & G3 & 219 & 157 & 228 & 130 & 22 & 94 & 22 & 22 \\
+Test 6 & G4 & 233 & 103 & 241 & 162 & 25 & 82 & 25 & 25 \\
+Test 7 & G3 & 217 & 172 & 234 & 178 & 27 & 121 & 27 & 27 \\
+Test 8 & G3 & 338 & 190 & 360 & 138 & 25 & 95 & 25 & 25 \\
+Test 9 & G4 & 834 & 90 & 1068 & 333 & 21 & 75 & 21 & 21 \\
+Test 10 & G1 & 154 & 135 & 157 & 71 & 26 & 87 & 26 & 26 \\
+Test 11 & G1 & 145 & 107 & 146 & 93 & 22 & 53 & 22 & 22 \\
+Test 12 & G1 & 100 & 116 & 101 & 53 & 20 & 43 & 20 & 20 \\
+Test 13 & G1 & 111 & 61 & 111 & 67 & 26 & 44 & 26 & 26 \\
+Test 14 & G1 & 115 & 113 & 118 & 97 & 25 & 32 & 25 & 25 \\
+Test 15 & G2 & 152 & 141 & 152 & 62 & 18 & 98 & 19 & 19 \\
+Test 16 & G2 & 104 & 59 & 107 & 54 & 22 & 51 & 22 & 22 \\
+Test 17 & G2 & 112 & 109 & 111 & 101 & 27 & 31 & 27 & 27 \\
+Test 18 & G2 & 111 & 42 & 111 & 82 & 20 & 38 & 22 & 22 \\
+Test 19 & G2 & 109 & 107 & 116 & 100 & 20 & 83 & 20 & 20 \\
+Test 20 & G3 & 129 & 133 & 138 & 48 & 21 & 46 & 21 & 21 \\
+Test 21 & G3 & 139 & 148 & 161 & 86 & 23 & 92 & 23 & 23 \\
+Test 22 & G3 & 160 & 135 & 173 & 121 & 28 & 60 & 28 & 28 \\
+Test 23 & G3 & 185 & 174 & 189 & 108 & 26 & 92 & 26 & 26 \\
+Test 24 & G3 & 170 & 125 & 181 & 24 & 20 & 69 & 20 & 20 \\
+Test 25 & G4 & 126 & 85 & 122 & 92 & 25 & 66 & 25 & 25 \\
+Test 26 & G4 & 115 & 219 & 123 & 97 & 21 & 59 & 24 & 24 \\
+Test 27 & G4 & 149 & 130 & 144 & 43 & 26 & 64 & 26 & 26 \\
+Test 28 & G4 & 125 & 89 & 126 & 115 & 19 & 49 & 19 & 19 \\
+Test 29 & G4 & 226 & 178 & 228 & 35 & 23 & 88 & 23 & 23 \\
+Test 30 & G3 & 206 & 110 & 206 & 139 & 26 & 81 & 26 & 26 \\
+Test 31 & G3 & 171 & 123 & 181 & 75 & 21 & 92 & 21 & 21 \\
+Test 32 & G3 & 293 & 157 & 294 & 165 & 23 & 122 & 23 & 23 \\
+Test 33 & G3 & 166 & 123 & 168 & 137 & 32 & 58 & 32 & 32 \\
+Test 34 & G3 & 127 & 213 & 149 & 91 & 18 & 118 & 18 & 18 \\
+\end{longtable}
+
+\begin{longtable}{lrrrrrrrr}
+\caption{Search time (ms) and peak memory (KB) per stage}\label{tab:perlevel-time}\\
+\toprule
+ & \multicolumn{4}{c}{\textbf{Search time (ms)}} & \multicolumn{4}{c}{\textbf{Peak memory (KB)}} \\
+\cmidrule(lr){2-5}\cmidrule(lr){6-9}
+\textbf{Stage} & BFS & DFS & UCS & A* & BFS & DFS & UCS & A* \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Stage} & BFS & DFS & UCS & A* & BFS & DFS & UCS & A* \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+Test 1 & 26.1 & 23.3 & 33.0 & 4.4 & 25.4 & 27.7 & 36.1 & 9.6 \\
+Test 2 & 6.1 & 12.2 & 40.6 & 15.4 & 9.2 & 8.9 & 32.5 & 14.6 \\
+Test 3 & 24.9 & 29.2 & 26.2 & 8.5 & 20.9 & 20.2 & 34.2 & 14.0 \\
+Test 4 & 84.0 & 55.9 & 107.3 & 31.1 & 53.9 & 45.5 & 95.5 & 38.8 \\
+Test 5 & 52.6 & 39.4 & 56.8 & 34.3 & 38.1 & 29.7 & 54.8 & 38.6 \\
+Test 6 & 55.9 & 24.0 & 51.9 & 37.8 & 39.5 & 23.5 & 56.3 & 53.4 \\
+Test 7 & 54.0 & 31.2 & 42.7 & 35.7 & 38.8 & 41.2 & 56.6 & 53.0 \\
+Test 8 & 91.9 & 51.9 & 100.1 & 52.8 & 68.5 & 39.1 & 118.5 & 52.3 \\
+Test 9 & 199.9 & 15.4 & 232.8 & 82.2 & 183.0 & 18.2 & 255.9 & 105.8 \\
+Test 10 & 40.6 & 36.7 & 29.6 & 15.5 & 25.0 & 25.5 & 36.7 & 24.6 \\
+Test 11 & 41.1 & 22.5 & 28.1 & 19.3 & 23.9 & 21.7 & 35.4 & 33.4 \\
+Test 12 & 20.8 & 25.5 & 27.8 & 12.2 & 18.5 & 21.1 & 30.1 & 15.1 \\
+Test 13 & 27.4 & 10.7 & 26.7 & 15.1 & 19.5 & 12.3 & 31.1 & 17.2 \\
+Test 14 & 26.3 & 21.4 & 27.0 & 34.1 & 20.3 & 20.7 & 32.4 & 31.9 \\
+Test 15 & 40.8 & 38.6 & 42.1 & 22.1 & 24.6 & 30.0 & 36.4 & 24.7 \\
+Test 16 & 25.4 & 18.4 & 26.3 & 14.8 & 20.0 & 12.6 & 32.1 & 15.4 \\
+Test 17 & 46.5 & 32.8 & 33.4 & 32.1 & 19.9 & 19.8 & 31.4 & 31.4 \\
+Test 18 & 21.8 & 11.1 & 24.4 & 22.1 & 20.1 & 10.8 & 31.6 & 30.8 \\
+Test 19 & 21.1 & 21.3 & 22.2 & 20.7 & 20.6 & 22.1 & 32.9 & 31.8 \\
+Test 20 & 40.2 & 22.3 & 24.2 & 9.3 & 22.8 & 23.1 & 35.5 & 14.8 \\
+Test 21 & 24.4 & 27.9 & 56.7 & 28.6 & 25.6 & 28.1 & 51.1 & 32.0 \\
+Test 22 & 58.5 & 47.2 & 70.9 & 34.7 & 35.0 & 25.3 & 51.2 & 35.3 \\
+Test 23 & 52.0 & 61.6 & 65.9 & 40.0 & 34.9 & 40.2 & 51.1 & 35.0 \\
+Test 24 & 42.7 & 32.7 & 52.8 & 10.0 & 35.0 & 24.5 & 51.3 & 10.1 \\
+Test 25 & 40.1 & 29.9 & 49.2 & 50.9 & 22.0 & 20.0 & 33.4 & 30.2 \\
+Test 26 & 46.3 & 111.6 & 40.8 & 38.7 & 21.0 & 39.0 & 33.6 & 31.0 \\
+Test 27 & 44.2 & 56.1 & 71.6 & 12.8 & 25.1 & 23.8 & 37.0 & 14.7 \\
+Test 28 & 35.5 & 23.4 & 36.1 & 45.0 & 21.3 & 20.3 & 32.9 & 33.3 \\
+Test 29 & 60.0 & 38.6 & 56.0 & 12.3 & 38.7 & 39.0 & 55.3 & 13.4 \\
+Test 30 & 47.8 & 35.8 & 74.0 & 41.0 & 35.2 & 21.7 & 51.2 & 38.4 \\
+Test 31 & 38.6 & 39.7 & 63.7 & 23.5 & 35.0 & 25.0 & 51.2 & 24.5 \\
+Test 32 & 91.2 & 43.4 & 104.0 & 83.0 & 45.7 & 32.3 & 62.1 & 53.2 \\
+Test 33 & 59.7 & 44.5 & 43.8 & 36.3 & 26.3 & 22.7 & 51.1 & 36.1 \\
+Test 34 & 32.7 & 85.1 & 112.6 & 49.3 & 24.1 & 45.0 & 51.2 & 34.0 \\
+\end{longtable}
+\endgroup
+
+\section{Running the source code and the experiments}
+
+\begin{lstlisting}[language=bash, numbers=none]
+# Game (from the Source/ folder)
+python -m pip install -r requirements.txt
+python main.py
+
+# Experiments and charts (from the repository root)
+python -m pip install pandas matplotlib seaborn
+python experiments/run_experiments.py   # results CSV
+python experiments/plot_results.py      # charts
+\end{lstlisting}
+
+\section{Use of Generative AI}
+
+% TODO: describe honestly how your team used AI tools. Keep or delete the rows that apply.
+\begin{table}[H]
+\centering
+\caption{Generative AI usage}
+\label{tab:ai}
+\begin{tabularx}{\linewidth}{lXX}
+\toprule
+\textbf{Tool} & \textbf{What it was used for} & \textbf{Example prompts} \\
+\midrule
+\fillin{Tool name} & \fillin{Task, e.g. debugging, explaining concepts, plotting code, report wording} & \fillin{Prompt} \\
+\fillin{Tool name} & \fillin{Task} & \fillin{Prompt} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\fillin{Explain how the team checked and understood the AI-generated output before using it.}

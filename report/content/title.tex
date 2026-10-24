@@ -1,0 +1,29 @@
+% Cover page
+\begin{titlepage}
+\thispagestyle{empty}
+\begin{center}
+{\large\bfseries VIETNAM NATIONAL UNIVERSITY HO CHI MINH CITY\\
+UNIVERSITY OF SCIENCE\\
+FACULTY OF INFORMATION TECHNOLOGY\\}
+\vspace{1.2cm}
+
+% Put the HCMUS logo at images/hcmus-logo.png; it is skipped while the file is missing.
+\IfFileExists{images/hcmus-logo.png}{%
+  \includegraphics[width=0.32\linewidth]{hcmus-logo.png}\\[1.2cm]
+}{\vspace{3cm}}
+
+{\Huge\bfseries \reporttitle\\[0.4cm]}
+{\Large Topic: \reportname\\[0.2cm]}
+{\large Course: \coursename\\}
+\vspace{1.5cm}
+
+\begin{tabular}{rl}
+\textbf{Students:} & \begin{tabular}[t]{@{}l@{}}\studentname\end{tabular}\\[0.4cm]
+\textbf{Class:} & \classname\\[0.2cm]
+\textbf{Instructor:} & \teachername\\
+\end{tabular}
+
+\vfill
+{\large Ho Chi Minh City, \today}
+\end{center}
+\end{titlepage}

@@ -1,0 +1,54 @@
+\section{Project Overview}
+
+\subsection{The game}
+
+Bloxorz is a block-rolling puzzle. The player rolls a $1\times1\times2$ block over a grid of
+tiles and must drop it, standing upright, into a goal hole. The block can stand on one cell
+or lie horizontally or vertically across two cells, and a roll fails if any part of the block
+ends up over a void cell or outside the board. Our implementation supports every tile type of
+the assignment: floor, void, goal, fragile tiles, bridges, and soft, heavy and split switches
+with both \emph{toggle} and \emph{permanent} bridge behaviour, including splitting the block
+into two cubes and merging them again.
+
+\subsection{Implementation}
+
+The program is written in Python 3.10+ with a Panda3D desktop GUI. The code is organised in
+four layers whose dependencies point strictly downwards, so the solvers never depend on the GUI
+(Table~\ref{tab:modules}).
+
+\begin{table}[H]
+\centering
+\caption{Source code organisation}
+\label{tab:modules}
+\begin{tabularx}{\linewidth}{lX}
+\toprule
+\textbf{Module} & \textbf{Responsibility} \\
+\midrule
+\texttt{models/} & Immutable search states (\texttt{BlockState}, \texttt{GameState}), the \texttt{Level} data and the validated JSON level loader. \\
+\texttt{engine/transitions.py} & The game rules: orientation table, legality, switches, bridges, split and merge, \texttt{successors()} and \texttt{is\_goal()}. \\
+\texttt{solvers/} & \texttt{bfs.py}, \texttt{dfs.py}, \texttt{ucs.py}, \texttt{astar.py}; \texttt{common.py} holds \texttt{SearchResult} and the shared cost function. \\
+\texttt{gui/} & Panda3D scene, input, animations, solver buttons and solution playback. \\
+\texttt{levels/} & \texttt{campaign.json} and 35 levels (\texttt{test1.json} to \texttt{test34.json}, \texttt{test\_all.json}). \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\textbf{Level format.} Each stage is a JSON file, so the same stage is reused by the GUI and
+by all four solvers. The \texttt{map} field is a list of strings using the symbols
+\texttt{\#} (void), \texttt{.} (floor), \texttt{S}/\texttt{G} (start/goal), \texttt{F} (fragile),
+\texttt{B} (bridge), \texttt{o} (soft switch), \texttt{X} (heavy switch) and \texttt{P}
+(split switch). Optional lists define bridge groups (cells and initial state), switches
+(position, type, \texttt{toggle} or \texttt{permanent}, target bridges) and split switches
+(position and the two destination cells). Every level is validated when the program starts.
+
+\textbf{GUI.} The window shows the 3D board, the block and every tile type. The control bar has
+\emph{New Game} (level selector) and \emph{Restart} buttons, and one button per solver
+(\emph{BFS}, \emph{DFS}, \emph{UCS}, \emph{A*}). A solver runs from the current state; a results
+card then shows Search Time, Memory Usage, Expanded Nodes and Solution Length, and the solution is
+replayed with Play, Pause, Step Back and Step Forward controls.
+
+\textbf{Running the program.} From the \texttt{Source/} folder:
+\begin{lstlisting}[language=bash, numbers=none]
+python -m pip install -r requirements.txt
+python main.py
+\end{lstlisting}

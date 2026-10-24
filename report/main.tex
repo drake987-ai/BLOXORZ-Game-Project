@@ -1,0 +1,71 @@
+\documentclass[12pt]{article}
+
+\usepackage{hcmus-report-template}
+
+% Disable indentation on new paragraphs
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+
+% Line spacing 1.5
+\renewcommand{\baselinestretch}{1.5}
+
+% Graphic path
+\graphicspath{{images/}}
+
+% To use Times font family, uncomment this row
+% \usepackage{mathptmx}
+
+% Define course name, report name and report title.
+\newcommand{\coursename}{Introduction to Artificial Intelligence (CSC14003)}
+\newcommand{\reportname}{Bloxorz Solver}
+\newcommand{\reporttitle}{Project 1 Report}
+
+% TODO: fill in the team members and the instructor.
+\newcommand{\studentname}{%
+  \fillin{Full name 1} -- \fillin{Student ID 1}\\
+  \fillin{Full name 2} -- \fillin{Student ID 2}\\
+  \fillin{Full name 3} -- \fillin{Student ID 3}\\
+  \fillin{Full name 4} -- \fillin{Student ID 4}}
+\newcommand{\teachername}{\fillin{Instructor name}}
+\newcommand{\classname}{\fillin{Class}}
+
+% Header
+\lhead{\reporttitle}
+\rhead{
+University of Science - VNU-HCM\\
+\coursename
+}
+
+% Footer
+\newcommand{\leftfooter}{\LaTeX\ template by \href{https://github.com/trhgquan}{Quan, Tran Hoang}}
+\lfoot{\footnotesize\leftfooter}
+
+% ============ DOCUMENT ============
+\begin{document}
+
+\pagenumbering{roman}
+\input{content/title.tex}
+
+\tableofcontents
+\pagebreak
+\listoftables
+\pagebreak
+\listoffigures
+\pagebreak
+
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+\input{content/planning}
+\input{content/overview}
+\input{content/algorithms}
+\input{content/experiments}
+\input{content/video}
+
+% References
+\input{ref/ref.tex}
+
+% Appendix
+\appendix
+\input{appendix/appendix.tex}
+\end{document}

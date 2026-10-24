@@ -1,0 +1,394 @@
+\section{Algorithm Description}
+
+\subsection{Formalising the search problem}
+
+Bloxorz is fully observable and deterministic: the whole board is visible and each action
+leads to exactly one successor. We therefore model it as a classical search problem. All four
+solvers share the same problem definition and never re-implement the game rules; they only call
+\texttt{successors(level, state)} and \texttt{is\_goal(level, state)} from
+\texttt{engine/transitions.py}. A rule therefore lives in one place and affects every algorithm
+in the same way, which keeps the comparison fair.
+
+\subsubsection{State representation}
+
+The static stage (tiles, goal, switch definitions) is stored in a \texttt{Level} object and is
+\emph{not} part of the state. A state is an immutable \texttt{GameState}
+(Table~\ref{tab:state}).
+
+\begin{table}[H]
+\centering
+\caption{Components of a search state}
+\label{tab:state}
+\begin{tabularx}{\linewidth}{llX}
+\toprule
+\textbf{Field} & \textbf{Type} & \textbf{Meaning} \\
+\midrule
+\texttt{block.orientation} & \texttt{S}, \texttt{H}, \texttt{V} & Standing, lying horizontally, lying vertically \\
+\texttt{block.row}, \texttt{block.col} & int & \texttt{S}: occupied cell; \texttt{H}: left cell; \texttt{V}: top cell \\
+\texttt{bridge\_mask} & int (bitmask) & Bit $i$ is 1 when bridge group $i$ is open \\
+\texttt{cubes} & \texttt{None} or two cells & Positions of the two cubes after a split \\
+\texttt{active\_cube} & 0 or 1 & The cube that the next move controls \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{itemize}[leftmargin=*]
+\item \textbf{Orientation} is part of the state because it decides which cells are occupied,
+whether the block may rest on a fragile tile, whether it can win, and how each roll transforms it.
+\item \textbf{Bridge configuration} is part of the state, as required: the same block placement
+with different open/closed bridges allows different moves. A bitmask keeps the state small and
+fast to hash; with $B$ bridge groups there are at most $2^B$ configurations.
+\item \textbf{Split mode} needs \texttt{cubes} and \texttt{active\_cube}; the active cube decides
+which cube the next action moves.
+\item \texttt{GameState} is a frozen dataclass, hence hashable, so whole states are used as
+dictionary keys and set members to detect repeated states.
+\end{itemize}
+
+For a stage with $N$ floor cells, an unsplit block has at most about $3N$ placements, multiplied
+by $2^B$ bridge configurations; split mode adds at most $2N(N-1)$ cube configurations. Our test
+stages have 37 to 90 floor cells and at most two bridge groups, so only hundreds to a few thousand
+states are reachable; the \emph{Test All} stage (432 floor cells, six bridge groups, a split
+switch) is much larger.
+
+\subsubsection{Initial state and goal test}
+
+The initial state is the state passed to the solver: the GUI passes the current state, which may
+be mid-level, split, or have bridges toggled; the experiments use the stage's start state (block
+standing on \texttt{S}, bridges as defined in the JSON file). The goal test holds only when the
+block is whole, \emph{standing}, and on the goal cell. A block lying across the goal and a single
+cube do not win.
+
+\subsubsection{Actions and transition model}
+
+The actions are \texttt{UP}, \texttt{DOWN}, \texttt{LEFT}, \texttt{RIGHT} and, only while the
+block is split, \texttt{SWAP}. \texttt{transition(level, state, action)} returns the next state
+or \texttt{None} for an illegal move, in five steps.
+
+\textbf{(1) Orientation table.} Table~\ref{tab:roll} lists the twelve deterministic
+(orientation, direction) cases. A standing block tips over in the rolling direction, a block
+lying along the rolling direction stands up, and a block lying across it rolls sideways.
+
+\begin{table}[H]
+\centering
+\caption{Orientation transition table, block at $(r,c)$}
+\label{tab:roll}
+\begin{tabular}{lllll}
+\toprule
+\textbf{From} & \textbf{UP} & \textbf{DOWN} & \textbf{LEFT} & \textbf{RIGHT} \\
+\midrule
+\texttt{S} & \texttt{V} $(r-2,c)$ & \texttt{V} $(r+1,c)$ & \texttt{H} $(r,c-2)$ & \texttt{H} $(r,c+1)$ \\
+\texttt{H} & \texttt{H} $(r-1,c)$ & \texttt{H} $(r+1,c)$ & \texttt{S} $(r,c-1)$ & \texttt{S} $(r,c+2)$ \\
+\texttt{V} & \texttt{S} $(r-1,c)$ & \texttt{S} $(r+2,c)$ & \texttt{V} $(r,c-1)$ & \texttt{V} $(r,c+1)$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{(2) Legality.} Every occupied cell must be supported (not void, not off the board, not a
+closed bridge), and a standing block must not be on a fragile tile.
+
+\textbf{(3) Switches} fire only on a fresh press (pressed after the move but not before it).
+A soft switch fires when any part of the block, or a cube, covers it; a heavy switch only when
+the block stands on it. A \emph{toggle} effect flips the bridge bits (XOR); a \emph{permanent}
+effect sets them to a fixed state.
+
+\textbf{(4) Split.} A block that arrives standing on a split switch is teleported into two cubes
+at predefined cells (optionally changing bridges). Each move then moves the active cube by one
+cell; cubes can press soft switches only.
+
+\textbf{(5) Merge.} When the two cubes become adjacent they merge into an \texttt{H} or
+\texttt{V} block, if that placement is legal.
+
+Illegal moves never appear in \texttt{successors()}, so no solver generates a falling state.
+
+\subsubsection{Cost function}
+
+BFS and DFS ignore costs. UCS and A* share the risk-aware cost \texttt{move\_cost} defined in
+\texttt{solvers/common.py} (Table~\ref{tab:cost}).
+
+\begin{table}[H]
+\centering
+\caption{Step cost used by UCS and A*}
+\label{tab:cost}
+\begin{tabular}{lc}
+\toprule
+\textbf{Transition} & \textbf{Cost} \\
+\midrule
+\texttt{SWAP} & 0 \\
+Each roll of the block or step of a cube & 1 \\
+Additional penalty if any occupied cell ends on a fragile tile & $+4$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{itemize}[leftmargin=*]
+\item \textbf{Why not uniform.} With a cost of 1 per move, UCS reduces to BFS. We make risky
+moves expensive instead.
+\item \textbf{Fragile penalty.} A fragile tile breaks if the block ends up standing on it, so a
+path that keeps landing on fragile tiles is one wrong orientation away from failure. A penalty of
+4 means the solver accepts a detour of up to three extra rolls to avoid one fragile landing. It is
+large enough to change the path when a detour exists and small enough that unavoidable fragile
+tiles are still crossed.
+\item \textbf{SWAP is free} because it moves nothing; it only changes which cube is controlled.
+This also matches the GUI's Moves counter, which does not count \texttt{SWAP}.
+\item \textbf{Consequences.} All costs are non-negative, which UCS and A* need for optimality,
+and every non-\texttt{SWAP} move costs at least 1, which the A* heuristic relies on
+(Section~\ref{sec:heuristic}). UCS and A* minimise risk-weighted cost, not the number of moves;
+the number of moves is still reported separately.
+\end{itemize}
+
+\subsubsection{Avoiding repeated states}
+
+All four algorithms are graph searches and always compare the \emph{whole} \texttt{GameState},
+never just coordinates (Table~\ref{tab:visited}). The state space is finite and each state is
+expanded at most once, so no algorithm can loop. Two consecutive zero-cost \texttt{SWAP}s return
+to a state that is already closed, so they cannot loop either. A dictionary
+\texttt{parents[state] = (previous\_state, action)} rebuilds the solution by walking back from the
+goal and reversing the actions.
+
+\begin{table}[H]
+\centering
+\caption{Repeated-state handling}
+\label{tab:visited}
+\begin{tabular}{lll}
+\toprule
+\textbf{Algorithm} & \textbf{Structure} & \textbf{State marked when} \\
+\midrule
+BFS & \texttt{parents} dictionary & generated \\
+DFS & \texttt{parents} dictionary & popped from the stack \\
+UCS, A* & \texttt{best} cost dictionary $+$ \texttt{closed} set & popped from the priority queue \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Measurements}
+
+Every solver returns a \texttt{SearchResult} with the four required measurements:
+\textbf{search time} (\texttt{time.perf\_counter()} around the search loop),
+\textbf{peak memory} (the peak of Python allocations during the search, from
+\texttt{tracemalloc}), \textbf{expanded nodes} (the number of states whose successors were
+generated) and \textbf{solution length} (the number of moves, \texttt{SWAP} excluded).
+
+% -------------------------------------------------------------------------
+\subsection{Breadth-First Search (BFS)}
+
+BFS expands states level by level: first every state one action away from the start, then every
+state two actions away, and so on. The frontier is a FIFO queue (\texttt{collections.deque}).
+
+\begin{algorithm}[H]
+\caption{BFS (\texttt{solvers/bfs.py})}
+\label{alg:bfs}
+\begin{algorithmic}[1]
+\If{\Call{IsGoal}{$start$}} \Return empty path \EndIf
+\State $parents \gets \{start: \textsc{None}\}$; $frontier \gets$ queue $[start]$
+\While{$frontier$ is not empty}
+  \State $s \gets frontier.\textsc{PopLeft}()$; $expanded \gets expanded + 1$
+  \For{each $(a, s')$ in \Call{Successors}{$s$}}
+    \If{$s' \in parents$} \textbf{continue} \EndIf
+    \State $parents[s'] \gets (s, a)$
+    \If{\Call{IsGoal}{$s'$}} \Return \Call{Rebuild}{$parents, s'$} \Comment{goal test on generation}\EndIf
+    \State $frontier.\textsc{Append}(s')$
+  \EndFor
+\EndWhile
+\State \Return no solution
+\end{algorithmic}
+\end{algorithm}
+
+\begin{itemize}[leftmargin=*]
+\item \texttt{parents} doubles as the visited set, so every state enters the queue once.
+\item The goal test is applied when a state is \emph{generated}. With BFS the first generated goal
+is always at minimum depth, so stopping early keeps optimality and saves a whole layer of
+expansions.
+\item \textbf{Complete}: the state space is finite. \textbf{Optimal in the number of actions},
+\texttt{SWAP} included. It does not guarantee the fewest displayed moves (10 moves $+$ 3
+\texttt{SWAP} $=$ 13 actions loses to 11 moves $+$ 0 \texttt{SWAP}) and it ignores fragile tiles.
+\item Time and memory $O(b^d)$, where $b \le 4$ ($5$ when split) is the branching factor and $d$
+the solution depth; in practice bounded by the number of reachable states.
+\end{itemize}
+
+% -------------------------------------------------------------------------
+\subsection{Depth-First Search (DFS)}
+
+We implement \textbf{graph-search DFS} (not IDS). DFS always follows the newest branch until it
+gets stuck, then backtracks. The frontier is a LIFO stack.
+
+\begin{algorithm}[H]
+\caption{DFS (\texttt{solvers/dfs.py})}
+\label{alg:dfs}
+\begin{algorithmic}[1]
+\State $parents \gets \{\}$; $stack \gets [(start, \textsc{None})]$
+\While{$stack$ is not empty}
+  \State $(s, link) \gets stack.\textsc{Pop}()$
+  \If{$s \in parents$} \textbf{continue} \EndIf
+  \State $parents[s] \gets link$ \Comment{marked when popped}
+  \If{\Call{IsGoal}{$s$}} \Return \Call{Rebuild}{$parents, s$} \EndIf
+  \State $expanded \gets expanded + 1$
+  \For{each $(a, s')$ in \textsc{Reversed}(\Call{Successors}{$s$})}
+    \If{$s' \notin parents$} $stack.\textsc{Push}((s', (s, a)))$ \EndIf
+  \EndFor
+\EndWhile
+\State \Return no solution
+\end{algorithmic}
+\end{algorithm}
+
+\begin{itemize}[leftmargin=*]
+\item An explicit stack replaces recursion, so long paths (1363 moves on Test All) cannot hit
+Python's recursion limit.
+\item A state is marked when \emph{popped}, not when pushed, so the recorded parent link is the
+route DFS actually followed to it.
+\item Successors are pushed in reverse so that the engine's first action (\texttt{UP}, then
+\texttt{DOWN}, \texttt{LEFT}, \texttt{RIGHT}, \texttt{SWAP}) is explored first.
+\item \textbf{Complete} on a finite space thanks to the visited set, but \textbf{not optimal}: it
+returns the first solution it meets. The frontier stays small ($O(b\,m)$ for maximum depth $m$),
+although the visited set can grow to the size of the state space.
+\end{itemize}
+
+% -------------------------------------------------------------------------
+\subsection{Uniform-Cost Search (UCS)}
+
+UCS expands the state with the smallest path cost $g(n)$ first. The frontier is a binary heap
+(\texttt{heapq}) keyed on $g$.
+
+\begin{algorithm}[H]
+\caption{UCS (\texttt{solvers/ucs.py})}
+\label{alg:ucs}
+\begin{algorithmic}[1]
+\State $best \gets \{start: 0\}$; $parents \gets \{start: \textsc{None}\}$; $closed \gets \emptyset$
+\State $heap \gets [(0, 0, tie, start)]$ \Comment{(cost, number of actions, insertion order, state)}
+\While{$heap$ is not empty}
+  \State $(g, depth, \_, s) \gets heap.\textsc{PopMin}()$
+  \If{$s \in closed$} \textbf{continue} \Comment{stale entry}\EndIf
+  \If{\Call{IsGoal}{$s$}} \Return \Call{Rebuild}{$parents, s$} \Comment{goal test on pop}\EndIf
+  \State $closed \gets closed \cup \{s\}$; $expanded \gets expanded + 1$
+  \For{each $(a, s')$ in \Call{Successors}{$s$}}
+    \If{$s' \in closed$} \textbf{continue} \EndIf
+    \State $g' \gets g + \Call{MoveCost}{s, s', a}$
+    \If{$s' \notin best$ \textbf{or} $g' < best[s']$}
+      \State $best[s'] \gets g'$; $parents[s'] \gets (s, a)$
+      \State $heap.\textsc{Push}((g', depth + 1, tie, s'))$
+    \EndIf
+  \EndFor
+\EndWhile
+\State \Return no solution
+\end{algorithmic}
+\end{algorithm}
+
+\begin{itemize}[leftmargin=*]
+\item \textbf{Goal test on pop.} With non-uniform costs, the goal may first be generated through
+an expensive route; only when it is popped is its $g$ guaranteed minimal.
+\item \textbf{Lazy deletion.} \texttt{heapq} has no decrease-key, so a cheaper route pushes a new
+entry and the old one is skipped when popped (it is already in \texttt{closed}).
+\item \textbf{Tie-breaking.} Among equal costs, fewer actions are preferred; the insertion counter
+prevents Python from comparing two \texttt{GameState} objects.
+\item \textbf{Complete and optimal} with respect to \texttt{move\_cost}, because all step costs are
+non-negative. Time $O(N \log N)$ and memory $O(N)$, where $N$ is the number of states cheaper than
+the optimal cost $C^*$. UCS grows in cost contours, so when the solution must cross a fragile tile
+it also expands states deeper than the solution depth.
+\end{itemize}
+
+% -------------------------------------------------------------------------
+\subsection{A* Search}
+
+A* uses the same skeleton and the same cost $g$ as UCS, but orders the heap by
+\begin{equation}
+f(n) = g(n) + h(n),
+\end{equation}
+where $h(n)$ estimates the remaining cost. The heap key is $(f, h, \text{insertion order})$, so
+among equal $f$ the state closer to the goal is preferred. Because $h$ is consistent
+(Section~\ref{sec:admissible}), each state can be closed on its first expansion without reopening.
+
+\subsubsection{Heuristic design}
+\label{sec:heuristic}
+
+\textbf{Idea: a lower bound on moving the block's centre.} Ignore terrain, fragile tiles, bridges
+and orientation legality, and ask only how many rolls are needed to move the block's centre to the
+goal's centre. Coordinates are doubled (half-cell units) so that centres are integers
+(Table~\ref{tab:centre}); the goal is a standing block on $G=(g_r, g_c)$, with centre
+$(2g_r, 2g_c)$.
+
+\begin{table}[H]
+\centering
+\caption{Block centre in doubled coordinates}
+\label{tab:centre}
+\begin{tabular}{ll}
+\toprule
+\textbf{Shape} & \textbf{Centre} \\
+\midrule
+\texttt{S} at $(r,c)$ & $(2r, 2c)$ \\
+\texttt{H} at $(r,c)$ & $(2r, 2c+1)$ \\
+\texttt{V} at $(r,c)$ & $(2r+1, 2c)$ \\
+Two cubes at $(r_0,c_0), (r_1,c_1)$ & $(r_0+r_1, c_0+c_1)$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+In these units, a roll changes only one coordinate; standing $\leftrightarrow$ lying shifts the
+centre by 3 (1.5 cells) and lying $\to$ lying by 2; a cube step shifts the cubes' midpoint by 1;
+\texttt{SWAP} shifts nothing. Every move of cost $\ge 1$ therefore moves the centre by at most 3 in
+Manhattan distance, which gives
+\begin{equation}
+\mathrm{direct}(p, q) = \left\lceil \frac{|p_r - q_r| + |p_c - q_c|}{3} \right\rceil .
+\end{equation}
+This is the assignment's ``Manhattan distance divided by 2'' idea, tightened to 1.5 cells per roll.
+It is also orientation-aware without an extra term: a lying block's centre sits half a cell off the
+grid, so a lying block next to the goal still gets $h \ge 1$.
+
+\textbf{Split switches.} A split switch teleports the block, so $\mathrm{direct}(p, \text{goal})$
+alone could overestimate. For each split switch $q$ with entry $E_q$ (its \texttt{P} tile) and exit
+$X_q$ (the midpoint of its destination cubes), the code computes $T[q]$, the best bound from $X_q$
+to the goal, possibly through other switches, by Bellman--Ford style relaxation over the few
+switches. The heuristic is
+\begin{equation}
+h(p) = \min\Big( \mathrm{direct}(p, \text{goal}),\ \min_q \big[\mathrm{direct}(p, E_q) + T[q]\big] \Big),
+\end{equation}
+treating the teleport as free, which can only lower the bound.
+
+\subsubsection{Admissibility and consistency}
+\label{sec:admissible}
+
+The heuristic must be admissible with respect to our cost function, \texttt{move\_cost}.
+
+\textbf{Admissible.} A path to the goal either never fires a split switch or fires one. In the
+first case each move shifts the centre by at most 3, so at least $\mathrm{direct}(p,\text{goal})$
+moves are needed, each costing at least 1. In the second case at least
+$\mathrm{direct}(p, E_q)$ moves come before the teleport and at least $T[q]$ after it, by the same
+argument from the exit. \texttt{SWAP} costs 0 but does not move the centre, and the fragile penalty
+only increases the true cost. Hence $h(n) \le h^*(n)$ for every state.
+
+\textbf{Consistent} ($h(s) \le c(s,s') + h(s')$ for every edge):
+\begin{itemize}[leftmargin=*]
+\item \emph{Roll or cube step:} $\mathrm{direct}$ satisfies the triangle inequality because
+$\lceil (a+b)/3 \rceil \le \lceil a/3 \rceil + \lceil b/3 \rceil$, and one move shifts the centre by
+at most 3, so $h(s) \le 1 + h(s') \le c + h(s')$ for any $c \ge 1$, including penalised moves.
+\item \emph{SWAP:} the centre is unchanged, so $h(s) = h(s')$ and $c = 0$.
+\item \emph{Teleport:} $h(s) \le \mathrm{direct}(p, E_q) + T[q] \le 1 + h(s')$, since $T[q]$ is
+exactly the heuristic value at the exit.
+\end{itemize}
+A consistent heuristic is also admissible, and lets A* close each state once while remaining
+optimal. The experiments agree: A* and UCS return the same cost on all 34 test stages.
+
+\subsubsection{Limitations}
+
+The bound ignores terrain, so it is loose on winding maps where the real path must detour, and it
+prices every move at 1, so it underestimates when fragile tiles cannot be avoided. A tighter
+admissible alternative would be a relaxed point-on-grid BFS distance computed once per stage.
+
+% -------------------------------------------------------------------------
+\subsection{Summary}
+
+\begin{table}[H]
+\centering
+\caption{Theoretical comparison of the four algorithms}
+\label{tab:theory}
+\begin{tabularx}{\linewidth}{lXXXX}
+\toprule
+ & \textbf{BFS} & \textbf{DFS} & \textbf{UCS} & \textbf{A*} \\
+\midrule
+Frontier & FIFO queue & LIFO stack & heap on $g$ & heap on $g+h$ \\
+Goal test & on generation & on pop & on pop & on pop \\
+Complete & yes & yes (finite space) & yes & yes \\
+Optimal for & number of actions & -- & \texttt{move\_cost} & \texttt{move\_cost} \\
+Uses cost / heuristic & no / no & no / no & yes / no & yes / yes \\
+Time & $O(b^d)$ & $O(b^m)$ & $O(b^{1+\lfloor C^*/\epsilon \rfloor})$ & depends on $h$ \\
+\bottomrule
+\end{tabularx}
+\end{table}

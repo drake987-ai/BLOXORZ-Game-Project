@@ -1,0 +1,62 @@
+% hcmus-report-template.sty
+% Layout modelled on the unofficial "HCMUS-report-template" by Quan, Tran Hoang
+% (https://www.overleaf.com/latex/templates/hcmus-report-template/zyrhmsxynwqs, GPL-3.0),
+% adapted for an English report.
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{hcmus-report-template}[2026/10/24 HCMUS report layout (English)]
+
+% ---------- Language and fonts ----------
+\RequirePackage[utf8]{inputenc}
+\RequirePackage[T1]{fontenc}
+\RequirePackage[english]{babel}
+\RequirePackage{lmodern}
+
+% ---------- Page layout ----------
+\RequirePackage[a4paper, left=2.5cm, right=2cm, top=3cm, bottom=2.5cm, headheight=32pt]{geometry}
+\RequirePackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\rfoot{Page \thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+% Plain pages (first page of TOC, LOF, ...) use the same header and footer.
+\fancypagestyle{plain}{}
+
+% ---------- Figures, tables, maths ----------
+\RequirePackage{graphicx}
+\RequirePackage{float}
+\RequirePackage{caption}
+\RequirePackage{subcaption}
+\RequirePackage{booktabs}
+\RequirePackage{longtable}
+\RequirePackage{multirow}
+\RequirePackage{tabularx}
+\RequirePackage{array}
+\RequirePackage[table]{xcolor}
+\RequirePackage{amsmath, amssymb, amsthm}
+\RequirePackage{enumitem}
+
+% ---------- Algorithms and code ----------
+\RequirePackage{algorithm}
+\RequirePackage{algpseudocode}
+\RequirePackage{listings}
+\lstset{
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{blue!70!black}\bfseries,
+  commentstyle=\color{green!45!black}\itshape,
+  stringstyle=\color{red!60!black},
+  numbers=left, numberstyle=\tiny\color{gray},
+  frame=single, rulecolor=\color{gray!50},
+  breaklines=true, showstringspaces=false, tabsize=4,
+  captionpos=b
+}
+
+% ---------- Links ----------
+\RequirePackage[hidelinks]{hyperref}
+
+% ---------- Helpers ----------
+% Red placeholder text: search the sources for \fillin to find everything left to complete.
+\newcommand{\fillin}[1]{\textcolor{red}{[#1]}}
+
+% Let long \texttt paths break lines without overflowing the margin.
+\setlength{\emergencystretch}{3em}
